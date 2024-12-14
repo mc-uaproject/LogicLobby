@@ -21,6 +21,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
@@ -198,6 +200,8 @@ public class Manager implements PluginMessageListener, Listener {
 
         PlayerHider.getPlayerHider().onPlayerJoin(player);
         TeleportBow.getTeleportBow().onPlayerJoin(player);
+
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 2, false, false));
     }
 
     @EventHandler
