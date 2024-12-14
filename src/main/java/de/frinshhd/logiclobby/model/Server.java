@@ -39,6 +39,8 @@ public class Server {
     private Float yaw = null;
     @JsonProperty
     private Float pitch = null;
+    @JsonProperty
+    private Integer maxPlayers = -1;
 
     @JsonProperty
     private String task = null;
@@ -143,4 +145,6 @@ public class Server {
     public String getTask() {
         return this.task;
     }
+
+    public Integer getMaxPlayers() { return this.maxPlayers; }
 }
