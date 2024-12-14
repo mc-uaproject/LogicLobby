@@ -33,7 +33,7 @@ public class SpigotTranslator {
             e.printStackTrace();
         }
 
-        messages.store(new FileOutputStream(path), null);
+//        messages.store(new FileOutputStream(path), null);
     }
 
     public static String build(String messageKey, TranslatorPlaceholder... translatorPlaceholders) {
