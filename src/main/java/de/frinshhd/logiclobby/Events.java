@@ -142,7 +142,7 @@ public class Events implements Listener {
                 for (Server server : getManager().getConfig().getTeleporter().getServers()) {
                     if (server.getServerName().equals(serverName)) {
                         new OnlineCountGetter(event.getPlayer(), serverName).getCount().thenApply(count -> {
-                            if (count < server.getMaxPlayers()) {
+                            if (server.canJoin(event.getPlayer(), count)) {
                                 server.execute(event.getPlayer());
                             } else {
                                 event.getPlayer().sendMessage(SpigotTranslator.build("server.full"));

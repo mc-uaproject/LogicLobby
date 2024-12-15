@@ -147,4 +147,9 @@ public class Server {
     }
 
     public Integer getMaxPlayers() { return this.maxPlayers; }
+
+    @JsonIgnore
+    public boolean canJoin(Player player, int currentOnline) {
+        return getMaxPlayers() < 0 || currentOnline < getMaxPlayers();
+    }
 }
