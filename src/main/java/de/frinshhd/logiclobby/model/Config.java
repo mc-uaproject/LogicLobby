@@ -27,6 +27,9 @@ public class Config {
     @JsonProperty
     private Events events = new Events();
 
+    @JsonProperty
+    private List<Portal> portals = new ArrayList<>();
+
     @JsonIgnore
     public boolean hasCloudNetSupportEnabled() {
         if (!Bukkit.getPluginManager().isPluginEnabled("CloudNet-Bridge")) {
@@ -69,4 +72,6 @@ public class Config {
     public Events getEvents() {
         return this.events;
     }
+
+    public List<Portal> getPortals() { return this.portals; }
 }

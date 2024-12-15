@@ -1,5 +1,9 @@
 package de.frinshhd.logiclobby;
 
+import de.frinshhd.logiclobby.model.Portal;
+import de.frinshhd.logiclobby.model.Server;
+import de.frinshhd.logiclobby.utils.OnlineCountGetter;
+import de.frinshhd.logiclobby.utils.SpigotTranslator;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,10 +15,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupArrowEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
 import static de.frinshhd.logiclobby.Main.getManager;
@@ -129,6 +130,30 @@ public class Events implements Listener {
             event.setCancelled(true);
             event.getArrow().remove();
             return;
+        }
+    }
+
+    @EventHandler
+    public void onPortalUse(PlayerPortalEvent event) {
+        event.setCancelled(true);
+        for (Portal portal : getManager().getConfig().getPortals()) {
+            if (portal.isInRange(event.getPlayer().getLocation())) {
+                String serverName = portal.getDestinationServer();
+                for (Server server : getManager().getConfig().getTeleporter().getServers()) {
+                    if (server.getServerName().equals(serverName)) {
+                        new OnlineCountGetter(event.getPlayer(), serverName).getCount().thenApply(count -> {
+                            if (count < server.getMaxPlayers()) {
+                                server.execute(event.getPlayer());
+                            } else {
+                                event.getPlayer().sendMessage(SpigotTranslator.build("server.full"));
+                            }
+                            return null;
+                        });
+                        break;
+                    }
+                }
+                break;
+            }
         }
     }
 }
