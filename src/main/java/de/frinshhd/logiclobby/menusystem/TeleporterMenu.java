@@ -250,6 +250,7 @@ public class TeleporterMenu extends Menu implements PluginMessageListener {
 
         if (server.getMaxPlayers() >= 0 && onlinePlayers.get(server.getServerName()) >= server.getMaxPlayers()) {
             player.sendMessage(SpigotTranslator.build("server.full"));
+            player.closeInventory();
             return;
         }
         server.execute(player);
