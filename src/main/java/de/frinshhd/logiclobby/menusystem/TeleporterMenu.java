@@ -248,7 +248,7 @@ public class TeleporterMenu extends Menu implements PluginMessageListener {
 
         Sounds.itemClick(player);
 
-        if (server.canJoin(player, onlinePlayers.get(server.getServerName()))) {
+        if (!server.canJoin(player, onlinePlayers.get(server.getServerName()))) {
             player.sendMessage(SpigotTranslator.build("server.full"));
             player.closeInventory();
             return;
