@@ -19,7 +19,6 @@ import eu.cloudnetservice.modules.bridge.player.CloudPlayer;
 import eu.cloudnetservice.modules.bridge.player.PlayerManager;
 import eu.cloudnetservice.modules.bridge.player.executor.PlayerExecutor;
 import eu.cloudnetservice.modules.bridge.player.executor.ServerSelectorType;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -33,7 +32,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -242,13 +240,8 @@ public class TeleporterMenu extends Menu implements PluginMessageListener {
 
         Sounds.itemClick(player);
 
-        CompletableFuture<Integer> playerCountFuture = (
-                server.isCurrentServer() ?
-                        CompletableFuture.completedFuture(Bukkit.getOnlinePlayers().size())
-                        : new OnlineCountGetter(player, server.getServerName()).getCount()
-        );
-        playerCountFuture.thenApply(playerCount -> {
-            if (!server.canJoin(player, playerCount)) {
+        server.canJoin(player).thenApply(canJoin -> {
+            if (!canJoin) {
                 player.sendMessage(SpigotTranslator.build("server.full"));
                 player.closeInventory();
                 return null;
@@ -259,7 +252,6 @@ public class TeleporterMenu extends Menu implements PluginMessageListener {
             }
             return null;
         });
-
     }
 
     public void getCount(Player player, String server) {

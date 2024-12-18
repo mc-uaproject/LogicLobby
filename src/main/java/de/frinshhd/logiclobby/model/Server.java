@@ -3,20 +3,14 @@ package de.frinshhd.logiclobby.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.frinshhd.logiclobby.Main;
-import de.frinshhd.logiclobby.utils.ItemTags;
-import de.frinshhd.logiclobby.utils.LoreBuilder;
-import de.frinshhd.logiclobby.utils.MessageFormat;
-import de.frinshhd.logiclobby.utils.SpigotTranslator;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import de.frinshhd.logiclobby.utils.*;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.permissions.Permission;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class Server {
 
@@ -149,12 +143,21 @@ public class Server {
 
     public Integer getMaxPlayers() { return this.maxPlayers; }
 
-    @JsonIgnore
-    public boolean canJoin(Player player, int currentOnline) {
-        if (player.hasPermission("logiclobby.bypassPlayerLimit")) {
-            return true;
+    public CompletableFuture<Integer> getCurrentPlayers(Player player) {
+        if (isCurrentServer()) {
+            return CompletableFuture.completedFuture(Bukkit.getOnlinePlayers().size());
         }
-        return getMaxPlayers() < 0 || currentOnline < getMaxPlayers();
+        return new OnlineCountGetter(player, getServerName()).getCount();
+    }
+
+    @JsonIgnore
+    public CompletableFuture<Boolean> canJoin(Player player) {
+        if (player.hasPermission("logiclobby.bypassPlayerLimit") || getMaxPlayers() < 0) {
+            return CompletableFuture.completedFuture(true);
+        }
+        final CompletableFuture<Boolean> future = new CompletableFuture<>();
+        getCurrentPlayers(player).thenApply(currentOnline -> future.complete(currentOnline < getMaxPlayers()));
+        return future;
     }
 
     @JsonIgnore

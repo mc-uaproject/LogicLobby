@@ -2,7 +2,6 @@ package de.frinshhd.logiclobby;
 
 import de.frinshhd.logiclobby.model.Portal;
 import de.frinshhd.logiclobby.model.Server;
-import de.frinshhd.logiclobby.utils.OnlineCountGetter;
 import de.frinshhd.logiclobby.utils.SpigotTranslator;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -141,8 +140,8 @@ public class Events implements Listener {
                 String serverName = portal.getDestinationServer();
                 for (Server server : getManager().getConfig().getTeleporter().getServers()) {
                     if (server.getServerName().equals(serverName)) {
-                        new OnlineCountGetter(event.getPlayer(), serverName).getCount().thenApply(count -> {
-                            if (server.canJoin(event.getPlayer(), count)) {
+                        server.canJoin(event.getPlayer()).thenApply(canJoin -> {
+                            if (canJoin) {
                                 server.execute(event.getPlayer());
                             } else {
                                 event.getPlayer().sendMessage(SpigotTranslator.build("server.full"));
