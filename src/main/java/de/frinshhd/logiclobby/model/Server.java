@@ -14,6 +14,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.permissions.Permission;
 
 import java.util.List;
 
@@ -150,6 +151,9 @@ public class Server {
 
     @JsonIgnore
     public boolean canJoin(Player player, int currentOnline) {
+        if (player.hasPermission("logiclobby.bypassPlayerLimit")) {
+            return true;
+        }
         return getMaxPlayers() < 0 || currentOnline < getMaxPlayers();
     }
 
