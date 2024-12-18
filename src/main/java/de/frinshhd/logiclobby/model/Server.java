@@ -152,4 +152,9 @@ public class Server {
     public boolean canJoin(Player player, int currentOnline) {
         return getMaxPlayers() < 0 || currentOnline < getMaxPlayers();
     }
+
+    @JsonIgnore
+    public boolean isCurrentServer() {
+        return location != null;
+    }
 }
