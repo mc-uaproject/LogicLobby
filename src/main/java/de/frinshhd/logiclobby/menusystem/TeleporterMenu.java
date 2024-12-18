@@ -38,7 +38,6 @@ import java.util.regex.Pattern;
 public class TeleporterMenu extends Menu implements PluginMessageListener {
 
     private static HashMap<String, SavedItem> items = new HashMap<>();
-    private static HashMap<String, Integer> onlinePlayers = new HashMap<>();
     private final Config config = Main.getManager().getConfig();
     private Manager manager;
 
@@ -233,14 +232,7 @@ public class TeleporterMenu extends Menu implements PluginMessageListener {
             }
         }
 
-        Server server = null;
-
-        for (Server servers : config.getTeleporter().getServers()) {
-            if (servers.getId().equals(id)) {
-                server = servers;
-                break;
-            }
-        }
+        final Server server = config.getTeleporter().getServers().stream().filter(servers -> servers.getId().equals(id)).findFirst().orElse(null);
 
         if (server == null) {
             return;
@@ -248,15 +240,18 @@ public class TeleporterMenu extends Menu implements PluginMessageListener {
 
         Sounds.itemClick(player);
 
-        if (!server.canJoin(player, onlinePlayers.get(server.getServerName()))) {
-            player.sendMessage(SpigotTranslator.build("server.full"));
-            player.closeInventory();
-            return;
-        }
-        server.execute(player);
-        if (server.getMessage() != null) {
-            player.sendMessage(MessageFormat.build(server.getMessage()));
-        }
+        server.canJoin(player).thenApply(canJoin -> {
+            if (!canJoin) {
+                player.sendMessage(SpigotTranslator.build("server.full"));
+                player.closeInventory();
+                return null;
+            }
+            server.execute(player);
+            if (server.getMessage() != null) {
+                player.sendMessage(MessageFormat.build(server.getMessage()));
+            }
+            return null;
+        });
     }
 
     public void getCount(Player player, String server) {
@@ -303,8 +298,6 @@ public class TeleporterMenu extends Menu implements PluginMessageListener {
             }
 
             int playerCount = in.readInt();
-
-            onlinePlayers.put(server, playerCount);
 
             if (!player.getUniqueId().equals(this.player.getUniqueId())) {
                 return;

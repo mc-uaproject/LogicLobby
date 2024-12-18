@@ -63,6 +63,10 @@ public class OnlineCountGetter implements PluginMessageListener {
             // Read the server name
             String server = in.readUTF();
 
+            if (!server.equals(this.server)) {
+                return;
+            }
+
             // Checking available bytes for reading the integer
             // The length of the subchannel, server name, and the length of the integer
             if (message.length < 2 + 2 + subchannel.getBytes(StandardCharsets.UTF_8).length + 4) {
