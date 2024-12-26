@@ -48,7 +48,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        Main.getInstance().getLogger().setLevel(Level.SEVERE);
+        Main.getInstance().getLogger().setLevel(Level.ALL);
 
         //create files
         new File("plugins/LogicLobby").mkdir();

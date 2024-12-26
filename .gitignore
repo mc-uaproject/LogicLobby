@@ -116,4 +116,3 @@ run/
 deploy.py
 /server/
 /mariadb/
-/proxy/
