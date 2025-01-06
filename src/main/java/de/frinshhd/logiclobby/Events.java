@@ -155,4 +155,24 @@ public class Events implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void onEnderPortalCollision(PlayerMoveEvent event) {
+        if (event.getTo().getBlock().getType().equals(Material.END_GATEWAY)) {
+            String serverName = getManager().getConfig().getMainServerName();
+            for (Server server : getManager().getConfig().getTeleporter().getServers()) {
+                if (server.getServerName().equals(serverName)) {
+                    server.canJoin(event.getPlayer()).thenApply(canJoin -> {
+                        if (canJoin) {
+                            server.execute(event.getPlayer());
+                        } else {
+                            event.getPlayer().sendMessage(SpigotTranslator.build("server.full"));
+                        }
+                        return null;
+                    });
+                    break;
+                }
+            }
+        }
+    }
 }

@@ -30,6 +30,9 @@ public class Config {
     @JsonProperty
     private List<Portal> portals = new ArrayList<>();
 
+    @JsonProperty
+    private String mainServerName;
+
     @JsonIgnore
     public boolean hasCloudNetSupportEnabled() {
         if (!Bukkit.getPluginManager().isPluginEnabled("CloudNet-Bridge")) {
@@ -74,4 +77,6 @@ public class Config {
     }
 
     public List<Portal> getPortals() { return this.portals; }
+
+    public String getMainServerName() { return this.mainServerName; }
 }
