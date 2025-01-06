@@ -6,6 +6,7 @@ import de.frinshhd.logiclobby.utils.SpigotTranslator;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -176,6 +177,7 @@ public class Events implements Listener {
             for (Server server : getManager().getConfig().getTeleporter().getServers()) {
                 if (server.getServerName().equals(serverName)) {
                     event.getPlayer().playSound(Sound.sound().type(org.bukkit.Sound.BLOCK_PORTAL_TRAVEL).build());
+                    event.getPlayer().spawnParticle(Particle.ENCHANTMENT_TABLE, event.getTo(), 10000);
                     teleporting.add(event.getPlayer());
                     server.canJoin(event.getPlayer()).thenApply(canJoin -> Bukkit.getScheduler().runTaskLater(getInstance(), () -> {
                         if (canJoin) {
@@ -185,7 +187,7 @@ public class Events implements Listener {
                             event.getPlayer().teleport(event.getFrom().getWorld().getSpawnLocation());
                         }
                         teleporting.remove(event.getPlayer());
-                    }, 30));
+                    }, 40));
                     break;
                 }
             }
