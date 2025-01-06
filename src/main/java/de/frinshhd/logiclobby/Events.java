@@ -3,6 +3,8 @@ package de.frinshhd.logiclobby;
 import de.frinshhd.logiclobby.model.Portal;
 import de.frinshhd.logiclobby.model.Server;
 import de.frinshhd.logiclobby.utils.SpigotTranslator;
+import net.kyori.adventure.sound.Sound;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,9 +19,14 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static de.frinshhd.logiclobby.Main.getInstance;
 import static de.frinshhd.logiclobby.Main.getManager;
 
 public class Events implements Listener {
+    private final List<Player> teleporting = new ArrayList<>();
 
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent event) {
@@ -158,18 +165,27 @@ public class Events implements Listener {
 
     @EventHandler
     public void onEnderPortalCollision(PlayerMoveEvent event) {
+        if (teleporting.contains(event.getPlayer())) {
+            if (!event.getFrom().getBlock().equals(event.getTo().getBlock())) {
+                event.setCancelled(true);
+            }
+            return;
+        }
         if (event.getTo().getBlock().getType().equals(Material.END_GATEWAY)) {
             String serverName = getManager().getConfig().getMainServerName();
             for (Server server : getManager().getConfig().getTeleporter().getServers()) {
                 if (server.getServerName().equals(serverName)) {
-                    server.canJoin(event.getPlayer()).thenApply(canJoin -> {
+                    event.getPlayer().playSound(Sound.sound().type(org.bukkit.Sound.BLOCK_PORTAL_TRAVEL).build());
+                    teleporting.add(event.getPlayer());
+                    server.canJoin(event.getPlayer()).thenApply(canJoin -> Bukkit.getScheduler().runTaskLater(getInstance(), () -> {
                         if (canJoin) {
                             server.execute(event.getPlayer());
                         } else {
                             event.getPlayer().sendMessage(SpigotTranslator.build("server.full"));
+                            event.getPlayer().teleport(event.getFrom().getWorld().getSpawnLocation());
                         }
-                        return null;
-                    });
+                        teleporting.remove(event.getPlayer());
+                    }, 30));
                     break;
                 }
             }
