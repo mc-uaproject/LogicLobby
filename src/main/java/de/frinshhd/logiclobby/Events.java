@@ -176,7 +176,7 @@ public class Events implements Listener {
             String serverName = getManager().getConfig().getMainServerName();
             for (Server server : getManager().getConfig().getTeleporter().getServers()) {
                 if (server.getServerName().equals(serverName)) {
-                    event.getPlayer().playSound(Sound.sound().type(org.bukkit.Sound.BLOCK_PORTAL_TRAVEL).build());
+                    event.getPlayer().playSound(Sound.sound().type(org.bukkit.Sound.BLOCK_PORTAL_TRAVEL).volume(0.6f).build());
                     event.getPlayer().spawnParticle(Particle.ENCHANTMENT_TABLE, event.getTo(), 10000);
                     teleporting.add(event.getPlayer());
                     server.canJoin(event.getPlayer()).thenApply(canJoin -> Bukkit.getScheduler().runTaskLater(getInstance(), () -> {
