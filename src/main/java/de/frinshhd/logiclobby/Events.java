@@ -173,7 +173,11 @@ public class Events implements Listener {
             return;
         }
         if (event.getTo().getBlock().getType().equals(Material.END_GATEWAY)) {
-            String serverName = getManager().getConfig().getMainServerName();
+            Portal portal = getManager().getConfig().getPortals().stream().filter(p -> p.isInRange(event.getPlayer().getLocation())).findFirst().orElse(null);
+            if (portal == null) {
+                return;
+            }
+            String serverName = portal.getDestinationServer();
             for (Server server : getManager().getConfig().getTeleporter().getServers()) {
                 if (server.getServerName().equals(serverName)) {
                     event.getPlayer().playSound(Sound.sound().type(org.bukkit.Sound.BLOCK_PORTAL_TRAVEL).volume(0.6f).build());
