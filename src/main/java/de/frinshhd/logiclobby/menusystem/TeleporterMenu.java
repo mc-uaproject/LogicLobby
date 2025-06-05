@@ -234,6 +234,7 @@ public class TeleporterMenu extends Menu implements PluginMessageListener {
 
         final Server server = config.getTeleporter().getServers().stream().filter(servers -> servers.getId().equals(id)).findFirst().orElse(null);
 
+
         if (server == null) {
             return;
         }

@@ -6,7 +6,7 @@ import com.google.common.io.ByteStreams;
 import de.frinshhd.logiclobby.Main;
 import de.frinshhd.logiclobby.menusystem.library.Menu;
 import de.frinshhd.logiclobby.model.Config;
-import de.frinshhd.logiclobby.model.Server;
+import de.frinshhd.logiclobby.model.ConfigServer;
 import de.frinshhd.logiclobby.utils.*;
 import eu.cloudnetservice.driver.inject.InjectionLayer;
 import eu.cloudnetservice.driver.provider.CloudServiceProvider;
@@ -36,6 +36,7 @@ public class LobbySwitcherMenu extends Menu implements PluginMessageListener {
 
     private static HashMap<String, SavedItem> items = new HashMap<>();
     private final Config config = Main.getManager().getConfig();
+
 
     public LobbySwitcherMenu(Player player) {
         super(player);
@@ -134,29 +135,29 @@ public class LobbySwitcherMenu extends Menu implements PluginMessageListener {
                         // Making sure we do not go beyond the bounds of the list
                         if (currentSlot < config.getLobbySwitcher().getLobbyServers().size()) {
                             // Getting the custom block from the list
-                            Server lobbyServer = config.getLobbySwitcher().getLobbyServers().get(currentSlot);
+                            ConfigServer lobbyserver = config.getLobbySwitcher().getLobbyServers().get(currentSlot);
                             // Filling the field with the custom block
 
                             int slot = i;
 
-                            if (lobbyServer.getItemSlot() >= 0 && lobbyServer.getItemSlot() < getSlots()) {
-                                slot = lobbyServer.getItemSlot();
+                            if (lobbyserver.getItemSlot() >= 0 && lobbyserver.getItemSlot() < getSlots()) {
+                                slot = lobbyserver.getItemSlot();
                             }
 
-                            getCount(player, lobbyServer.getServerName());
+                            getCount(player, lobbyserver.getServerName());
 
-                            ItemStack item = lobbyServer.getItem(config.getLobbySwitcher().getLobbyItem().getMaterialState(LobbyState.UNREACHABLE));
+                            ItemStack item = lobbyserver.getItem(config.getLobbySwitcher().getLobbyItem().getMaterialState(LobbyState.UNREACHABLE));
 
                             ItemMeta itemMeta = item.getItemMeta();
 
-                            String lore = SpigotTranslator.replacePlaceholders(lobbyServer.getDescription(), new TranslatorPlaceholder("playercount", "0"), new TranslatorPlaceholder("status", SpigotTranslator.build("status.offline")));
+                            String lore = SpigotTranslator.replacePlaceholders(lobbyserver.getDescription(), new TranslatorPlaceholder("playercount", "0"), new TranslatorPlaceholder("status", SpigotTranslator.build("status.offline")));
 
                             itemMeta.setLore(LoreBuilder.build(lore, ChatColor.getByChar(SpigotTranslator.build("items.standardDescriptionColor").substring(1))));
 
                             item.setItemMeta(itemMeta);
 
                             inventory.setItem(slot, item);
-                            items.put(lobbyServer.getServerName(), new SavedItem(slot, item, lobbyServer, lobbyServer.getDescription()));
+                            items.put(lobbyserver.getServerName(), new SavedItem(slot, item, lobbyserver, lobbyserver.getDescription()));
 
                             currentSlot++; // Move to the next custom block in the list
                         } else {
@@ -217,9 +218,9 @@ public class LobbySwitcherMenu extends Menu implements PluginMessageListener {
             return;
         }
 
-        Server server = null;
+        ConfigServer server = null;
 
-        for (Server servers : config.getLobbySwitcher().getLobbyServers()) {
+        for (ConfigServer servers : config.getLobbySwitcher().getLobbyServers()) {
             if (servers.getId().equals(id)) {
                 server = servers;
                 break;

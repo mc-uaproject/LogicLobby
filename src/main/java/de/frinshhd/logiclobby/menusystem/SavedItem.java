@@ -1,16 +1,16 @@
 package de.frinshhd.logiclobby.menusystem;
 
-import de.frinshhd.logiclobby.model.Server;
+import de.frinshhd.logiclobby.model.ConfigServer;
 import org.bukkit.inventory.ItemStack;
 
 public class SavedItem {
     private int slot;
     private ItemStack itemStack;
 
-    private Server server;
+    private ConfigServer server;
     private String lore;
 
-    public SavedItem(int slot, ItemStack itemStack, Server server, String lore) {
+    public SavedItem(int slot, ItemStack itemStack, ConfigServer server, String lore) {
         this.slot = slot;
         this.itemStack = itemStack;
         this.server = server;
@@ -30,7 +30,7 @@ public class SavedItem {
         return this.slot;
     }
 
-    public Server getServer() {
+    public ConfigServer getServer() {
         return this.server;
     }
 

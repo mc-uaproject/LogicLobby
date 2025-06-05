@@ -1,30 +1,30 @@
 package de.frinshhd.logiclobby.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
 public class LobbySwitcher {
-    @JsonProperty
+    @SerializedName("fillerItem")
     private FillerItem fillerItem = null;
 
-    @JsonProperty
+    @SerializedName("lobbyItem")
     private LobbyItem lobbyItem = null;
 
-    @JsonProperty
+    @SerializedName("lobbyTask")
     private LobbyTask lobbyTask = null;
 
-    @JsonProperty
-    private ArrayList<Server> lobbyServers = new ArrayList<>();
+    @SerializedName("lobbyServers")
+    private ArrayList<ConfigServer> lobbyServers = new ArrayList<>();
 
-    @JsonProperty
+    @SerializedName("inventoryRows")
     private int inventoryRows = 3;
 
     public int getInventorySlots() {
         return inventoryRows * 9;
     }
 
-    public ArrayList<Server> getLobbyServers() {
+    public ArrayList<ConfigServer> getLobbyServers() {
         return this.lobbyServers;
     }
 

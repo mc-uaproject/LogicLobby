@@ -12,6 +12,7 @@ items:
     material: COMPASS
     slot: 4
     menu: TELEPORTER
+    command: ''
   - id: lobbyswitcher
     friendlyName: "&2Lobby-Switcher"
     material: NETHER_STAR
@@ -109,7 +110,7 @@ teleporter:
       item:
         material: BEACON
         slot: 44
-      location: [ 0,80,0 ]
+      location: [ spawn ]
 events:
   noDamage: true
   noHunger: true

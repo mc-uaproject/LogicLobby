@@ -1,7 +1,6 @@
 package de.frinshhd.logiclobby.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import de.frinshhd.logiclobby.Main;
 import de.frinshhd.logiclobby.utils.*;
 import org.bukkit.*;
@@ -9,53 +8,47 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
-public class Server {
+public class ConfigServer {
 
-    @JsonIgnore
-    public String message = null;
-    @JsonProperty
+    public transient String message = null;
+    @SerializedName("id")
     private String id;
-    @JsonProperty
+    @SerializedName("name")
     private String name = "Lobby";
-    @JsonProperty
+    @SerializedName("description")
     private String description = null;
-    @JsonProperty
+    @SerializedName("serverName")
     private String serverName = null;
-    @JsonProperty
+    @SerializedName("item")
     private Item item = new Item();
-    @JsonProperty
-    private List<Double> location = null;
-    @JsonProperty
+    @SerializedName("location")
+    private ArrayList<String> location = null;
+    @SerializedName("world")
     private String world = "world";
-    @JsonProperty
+    @SerializedName("yaw")
     private Float yaw = null;
-    @JsonProperty
+    @SerializedName("pitch")
     private Float pitch = null;
-    @JsonProperty
+    @SerializedName("maxPlayers")
     private Integer maxPlayers = -1;
-
-    @JsonProperty
+    @SerializedName("task")
     private String task = null;
 
-    @JsonIgnore
     public ItemStack getItem() {
         return getItem(getId(), null);
     }
 
-    @JsonIgnore
     public ItemStack getItem(String tagID) {
         return getItem(tagID, null);
     }
 
-    @JsonIgnore
     public ItemStack getItem(Material material) {
         return getItem(getId(), material);
     }
 
-    @JsonIgnore
     public ItemStack getItem(String tagID, Material material) {
         if (this.item.getMaterial() != null) {
             material = this.item.getMaterial();
@@ -71,7 +64,6 @@ public class Server {
         ItemTags.tagItemMeta(itemMeta, tagID);
 
         item.setItemMeta(itemMeta);
-
 
         return item;
     }
@@ -93,12 +85,10 @@ public class Server {
     }
 
     public void execute(Player player) {
-        //If player should just be teleported to a location
         if (location != null) {
             player.teleport(getLocation());
             return;
         }
-
 
         if (Main.getManager().getConfig().hasCloudNetSupportEnabled()) {
             //Todo: add CloudNet support
@@ -108,7 +98,15 @@ public class Server {
     }
 
     public Location getLocation() {
-        Location location = new Location(getWorld(), this.location.get(0), this.location.get(1), this.location.get(2));
+        if (location.get(0).equalsIgnoreCase("spawn")) {
+            return Main.getManager().getConfig().getSpawn().getLocation();
+        }
+
+        ArrayList<Double> locationDouble = new ArrayList<>();
+
+        this.location.forEach(string -> locationDouble.add(Double.parseDouble(string)));
+
+        Location location = new Location(getWorld(), locationDouble.get(0), locationDouble.get(1), locationDouble.get(2));
 
         if (this.yaw != null) {
             location.setYaw(this.yaw);
@@ -150,7 +148,6 @@ public class Server {
         return new OnlineCountGetter(player, getServerName()).getCount();
     }
 
-    @JsonIgnore
     public CompletableFuture<Boolean> canJoin(Player player) {
         if (player.hasPermission("logiclobby.bypassPlayerLimit") || getMaxPlayers() < 0) {
             return CompletableFuture.completedFuture(true);
@@ -160,7 +157,6 @@ public class Server {
         return future;
     }
 
-    @JsonIgnore
     public boolean isCurrentServer() {
         return location != null;
     }

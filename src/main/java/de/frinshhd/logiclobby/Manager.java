@@ -1,11 +1,10 @@
 package de.frinshhd.logiclobby;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import de.frinshhd.logiclobby.itemsystem.items.PlayerHider;
 import de.frinshhd.logiclobby.itemsystem.items.TeleportBow;
 import de.frinshhd.logiclobby.model.Config;
@@ -25,12 +24,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 public class Manager implements PluginMessageListener, Listener {
     private static Config config;
@@ -76,14 +76,45 @@ public class Manager implements PluginMessageListener, Listener {
     }
 
     public void load() {
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        File file = new File("plugins/LogicLobby/config.yml");
+        Yaml yaml = new Yaml();
 
         try {
-            config = mapper.readValue(new FileInputStream("plugins/LogicLobby/config.yml"), Config.class);
+            Map<String, Object> yamlData = yaml.load(new FileReader(file));
+            config = gson.fromJson(gson.toJson(yamlData), Config.class);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void saveConfig(Config config) {
+        // Convert Config object to JSON string
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String jsonString = gson.toJson(config);
+
+        // Convert JSON string to Map
+        Map<String, Object> map = gson.fromJson(jsonString, Map.class);
+
+        // Set up SnakeYAML
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+        Representer representer = new Representer(options);
+        representer.getPropertyUtils().setSkipMissingProperties(true);
+        representer.addClassTag(Config.class, org.yaml.snakeyaml.nodes.Tag.MAP);
+
+        Yaml yaml = new Yaml(representer, options);
+
+        // Convert Map to YAML and save to file
+        try (FileWriter writer = new FileWriter("plugins/LogicLobby/config.yml")) {
+            yaml.dump(map, writer);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        load();
     }
 
     public void connectToDB() {
@@ -107,7 +138,6 @@ public class Manager implements PluginMessageListener, Listener {
         if (getServerName().equals(server)) {
             return;
         }
-
 
         try {
             ByteArrayOutputStream b = new ByteArrayOutputStream();
