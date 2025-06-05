@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder;
 import de.frinshhd.logiclobby.itemsystem.items.PlayerHider;
 import de.frinshhd.logiclobby.itemsystem.items.TeleportBow;
 import de.frinshhd.logiclobby.model.Config;
+import de.frinshhd.logiclobby.model.Portal;
 import de.frinshhd.logiclobby.mysql.MysqlManager;
 import de.frinshhd.logiclobby.utils.SpigotTranslator;
 import de.frinshhd.logiclobby.utils.TranslatorPlaceholder;
@@ -84,6 +85,7 @@ public class Manager implements PluginMessageListener, Listener {
         try {
             Map<String, Object> yamlData = yaml.load(new FileReader(file));
             config = gson.fromJson(gson.toJson(yamlData), Config.class);
+            config.getPortals().forEach(Portal::parsePoints);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

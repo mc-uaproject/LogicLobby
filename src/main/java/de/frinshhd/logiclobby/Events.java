@@ -1,7 +1,7 @@
 package de.frinshhd.logiclobby;
 
+import de.frinshhd.logiclobby.model.ConfigServer;
 import de.frinshhd.logiclobby.model.Portal;
-import de.frinshhd.logiclobby.model.Spawn;
 import de.frinshhd.logiclobby.utils.SpigotTranslator;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Bukkit;
@@ -143,7 +143,7 @@ public class Events implements Listener {
         for (Portal portal : getManager().getConfig().getPortals()) {
             if (portal.isInRange(event.getPlayer().getLocation())) {
                 String serverName = portal.getDestinationServer();
-                for (Server server : getManager().getConfig().getTeleporter().getServers()) {
+                for (ConfigServer server : getManager().getConfig().getTeleporter().getServers()) {
                     if (server.getServerName().equals(serverName)) {
                         server.canJoin(event.getPlayer()).thenApply(canJoin -> {
                             if (canJoin) {
@@ -178,7 +178,7 @@ public class Events implements Listener {
                 return;
             }
             String serverName = portal.getDestinationServer();
-            for (Server server : getManager().getConfig().getTeleporter().getServers()) {
+            for (ConfigServer server : getManager().getConfig().getTeleporter().getServers()) {
                 if (server.getServerName().equals(serverName)) {
                     event.getPlayer().playSound(Sound.sound().type(org.bukkit.Sound.BLOCK_PORTAL_TRAVEL).volume(0.6f).build());
                     event.getPlayer().spawnParticle(Particle.ENCHANTMENT_TABLE, event.getTo(), 10000);

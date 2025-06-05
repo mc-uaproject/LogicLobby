@@ -1,26 +1,25 @@
 package de.frinshhd.logiclobby.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 public class Portal {
+    @SerializedName("destinationServer")
     private String destinationServer;
+    @SerializedName("pointOne")
+    private String pointOne;
+    @SerializedName("pointTwo")
+    private String pointTwo;
+
     private Location pointOneLocation;
     private Location pointTwoLocation;
 
-    public Portal(
-            @JsonProperty("destinationServer") String destinationServer,
-            @JsonProperty("pointOne") String pointOne,
-            @JsonProperty("pointTwo") String pointTwo
-    ) {
-        this.destinationServer = destinationServer;
+    public void parsePoints() {
         pointOneLocation = parsePoint(pointOne);
         pointTwoLocation = parsePoint(pointTwo);
     }
 
-    @JsonIgnore
     private Location parsePoint(String point) {
         String[] parts = point.split(",");
         return new Location(Bukkit.getWorld(parts[0]), Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));
@@ -28,7 +27,6 @@ public class Portal {
 
     public String getDestinationServer() { return destinationServer; }
 
-    @JsonIgnore
     public boolean isInRange(Location location) {
         double x = location.getX();
         double y = location.getY();

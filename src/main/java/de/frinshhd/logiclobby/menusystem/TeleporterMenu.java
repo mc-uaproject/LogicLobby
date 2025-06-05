@@ -7,7 +7,7 @@ import de.frinshhd.logiclobby.Main;
 import de.frinshhd.logiclobby.Manager;
 import de.frinshhd.logiclobby.menusystem.library.Menu;
 import de.frinshhd.logiclobby.model.Config;
-import de.frinshhd.logiclobby.model.Server;
+import de.frinshhd.logiclobby.model.ConfigServer;
 import de.frinshhd.logiclobby.utils.*;
 import eu.cloudnetservice.driver.inject.InjectionLayer;
 import eu.cloudnetservice.driver.provider.CloudServiceProvider;
@@ -232,7 +232,7 @@ public class TeleporterMenu extends Menu implements PluginMessageListener {
             }
         }
 
-        final Server server = config.getTeleporter().getServers().stream().filter(servers -> servers.getId().equals(id)).findFirst().orElse(null);
+        final ConfigServer server = config.getTeleporter().getServers().stream().filter(servers -> servers.getId().equals(id)).findFirst().orElse(null);
 
 
         if (server == null) {
