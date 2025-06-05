@@ -12,8 +12,8 @@ public class Portal {
     @SerializedName("pointTwo")
     private String pointTwo;
 
-    private Location pointOneLocation;
-    private Location pointTwoLocation;
+    private transient Location pointOneLocation;
+    private transient Location pointTwoLocation;
 
     public void parsePoints() {
         pointOneLocation = parsePoint(pointOne);
